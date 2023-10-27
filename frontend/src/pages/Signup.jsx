@@ -12,7 +12,7 @@ export const Signup = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://127.0.0.1:8001/signup', {
+      const response = await fetch('http://127.0.0.1:8001/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

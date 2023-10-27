@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import './App.css';
-import { Signin } from './Signin';
-import { Signup } from './Signup';
+import './styles/App.css';  // Updated path for CSS file
+import { Signin } from './pages/Signin';  // Use curly braces for named exports
+import { Signup } from './pages/Signup';  // Use curly braces for named exports
 
 function App() {
   const [currentForm, setCurrentForm] = useState('signin');
@@ -12,7 +12,7 @@ function App() {
   return (
     <div className="App">
       {
-        currentForm === "Signin" ? <Signin onFormSwitch={toggleForm}/> : <Signup onFormSwitch={toggleForm}/>
+        currentForm === "signin" ? <Signin onFormSwitch={toggleForm}/> : <Signup onFormSwitch={toggleForm}/>
       }
     </div>
   );
