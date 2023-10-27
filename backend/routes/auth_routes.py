@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from supabase_py import create_client, Client
 import bcrypt
+import requests
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -58,25 +59,66 @@ def signup():
 
 @auth_bp.route("/signin", methods=["POST"])
 def signin():
+    # try:
+    #     data = request.get_json()
+    #     email = data.get("email").strip().lower()  # Normalize email to lowercase
+    #     password = data.get("password")
+
+    #     print("Received email:", email)
+    #     print("Received password:", password)
+
+    #     # Fetch all users from the database
+    #     users_response = supabase.table("Users").select("*").execute()
+    #     all_users = users_response.get('data', [])
+
+    #     # Manually find the user
+    #     user = next((user for user in all_users if user["Email"].lower() == email), None)
+
+    #     # Print the query result to the console
+    #     print("All users:", all_users)
+    #     print("User data:", user)
+        
+    #     if not user:
+    #         return jsonify({"message": "User not found!"}), 404
+
+    #     # Check if the provided password matches the stored hashed password
+    #     if not bcrypt.checkpw(password.encode('utf-8'), user["Password"].encode('utf-8')):
+    #         return jsonify({"message": "Invalid password!"}), 401
+
+    #     return jsonify({"message": "Signin successful!"}), 200
+    # except Exception as e:
+    #     print("An exception occurred:", str(e))
+    #     return jsonify({"message": "An unexpected error occurred!", "error": str(e)}), 500
     try:
         data = request.get_json()
-        email = data.get("email").strip().lower()  # Normalize email to lowercase
-        password = data.get("password")
+        email = data.get("email", "").strip().lower()
+        password = data.get("password", "")
 
         print("Received email:", email)
         print("Received password:", password)
 
-        # Fetch all users from the database
-        users_response = supabase.table("Users").select("*").execute()
-        all_users = users_response.get('data', [])
+        # Replace with your actual Supabase URL
+        supabase_url = "https://tpbjxnsgkuyljnxiqfsz.supabase.co"
+        api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwYmp4bnNna3V5bGpueGlxZnN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTYxMTI5NjIsImV4cCI6MjAxMTY4ODk2Mn0.lTYIrdhUz9qe2PdwKN-zbBDScqIHA7u97iatoIazqmc"
 
-        # Manually find the user
-        user = next((user for user in all_users if user["Email"].lower() == email), None)
+        # Construct the raw HTTP request to Supabase
+        url = f"{supabase_url}/rest/v1/Users?select=*&Email=eq.{email}"
+        headers = {
+            "apikey": api_key,
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "Prefer": "return=representation",
+        }
+        response = requests.get(url, headers=headers)
+        users_response = response.json()
 
-        # Print the query result to the console
-        print("All users:", all_users)
+        print("Raw HTTP Request to Supabase:", response.request.url, response.request.headers)
+        print("Users response:", users_response)
+
+        users = users_response if users_response else []
+        user = users[0] if users else None
         print("User data:", user)
-        
+
         if not user:
             return jsonify({"message": "User not found!"}), 404
 
