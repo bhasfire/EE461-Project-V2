@@ -1,20 +1,28 @@
-import React, { useState } from "react";
-import './styles/App.css';  // Updated path for CSS file
-import { Signin } from './pages/Signin';  // Use curly braces for named exports
-import { Signup } from './pages/Signup';  // Use curly braces for named exports
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { Signin } from './pages/Signin';
+import { Signup } from './pages/Signup';
+import Dashboard from './pages/Dashboard';
+import './styles/App.css';
 
 function App() {
-  const [currentForm, setCurrentForm] = useState('signin');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const toggleForm = (formName) => {
-    setCurrentForm(formName);
+  const handleSignIn = (isSuccess) => {
+    setIsAuthenticated(isSuccess);
   }
+
   return (
-    <div className="App">
-      {
-        currentForm === "signin" ? <Signin onFormSwitch={toggleForm}/> : <Signup onFormSwitch={toggleForm}/>
-      }
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Navigate to="/signin" />} />
+          <Route path="/signin" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Signin onSignIn={handleSignIn} />} />
+          <Route path="/signup" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Signup />} />
+          <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/signin" />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

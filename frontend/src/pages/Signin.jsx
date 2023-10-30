@@ -8,8 +8,6 @@ export const Signin = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Email:', email); // Debug: Log email
-    console.log('Password:', password); // Debug: Log password
     try {
       const response = await fetch('http://127.0.0.1:8001/auth/signin', {
         method: 'POST',
@@ -18,10 +16,18 @@ export const Signin = (props) => {
         },
         body: JSON.stringify({ email, password })
       });
-      const data = await response.json();
-      console.log('Response data:', data); // Debug: Log response data
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Response data:', data);
+        props.onSignIn(true); // Set isAuthenticated to true
+      } else {
+        console.error('Login failed');
+        props.onSignIn(false); // Set isAuthenticated to false
+      }
     } catch (error) {
-      console.error('Error logging in:', error); // Debug: Log any error
+      console.error('Error logging in:', error);
+      props.onSignIn(false); // Set isAuthenticated to false
     }
   }
   
