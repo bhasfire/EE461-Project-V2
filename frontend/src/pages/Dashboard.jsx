@@ -1,58 +1,53 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { Signin } from './Signin';
+import { Signup } from './Signup';
+import Projects from '../components/Projects'; // Updated import path
+import HardwareList from '../components/HardwareList'; // Updated import path
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Grid from '@mui/material/Unstable_Grid2/Grid2';
+import '../styles/App.css'; // Updated import path
 
-const Dashboard = () => {
-  const [projects, setProjects] = useState([
-    { projectID: '1', projectName: 'HWSet1', description: 'Hardware Set 1', capacity: 10, availability: 5 },
-    { projectID: '2', projectName: 'HWSet2', description: 'Hardware Set 2', capacity: 8, availability: 2 },
-  ]);
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
 
-  const [selectedProject, setSelectedProject] = useState(null);
+function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const handleProjectCreation = (projectName, description, projectID) => {
-    const newProject = { projectName, description, projectID, capacity: 0, availability: 0 };
-    setProjects([...projects, newProject]);
-  };
+  const handleSignIn = (isSuccess) => {
+    setIsAuthenticated(isSuccess);
+  }
 
-  const handleProjectSelection = (projectID) => {
-    const project = projects.find((p) => p.projectID === projectID);
-    setSelectedProject(project);
-  };
+  const renderDashboard = () => (
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <Grid container spacing={2}>
+        <Grid xs={2.5}>
+          <Projects />
+        </Grid>
+        <Grid xs={9}>
+          <HardwareList />
+        </Grid>
+      </Grid>
+    </ThemeProvider>
+  );
 
   return (
-    <div>
-      <h1>Dashboard</h1>
-      
-      {/* Project Creation Section */}
-      <div>
-        <h2>Create New Project</h2>
-        {/* Here you will have your form to create a new project */}
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Navigate to="/signin" />} />
+          <Route path="/signin" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Signin onSignIn={handleSignIn} />} />
+          <Route path="/signup" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Signup />} />
+          <Route path="/dashboard" element={isAuthenticated ? renderDashboard() : <Navigate to="/signin" />} />
+        </Routes>
       </div>
-
-      {/* Existing Projects Section */}
-      <div>
-        <h2>Existing Projects</h2>
-        <ul>
-          {projects.map((project) => (
-            <li key={project.projectID} onClick={() => handleProjectSelection(project.projectID)}>
-              {project.projectName}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Project Details Section */}
-      {selectedProject && (
-        <div>
-          <h2>Project Details</h2>
-          <p>Project ID: {selectedProject.projectID}</p>
-          <p>Project Name: {selectedProject.projectName}</p>
-          <p>Description: {selectedProject.description}</p>
-          <p>Capacity: {selectedProject.capacity}</p>
-          <p>Availability: {selectedProject.availability}</p>
-        </div>
-      )}
-    </div>
+    </Router>
   );
-};
+}
 
-export default Dashboard;
+export default App;

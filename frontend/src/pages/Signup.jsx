@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import { useNavigate } from "react-router-dom";
 
 export const Signup = (props) => {
 
@@ -26,7 +27,10 @@ export const Signup = (props) => {
     }
   }
   
-  
+  const navigate = useNavigate();
+  const switchForm = () => {
+    navigate("/signin")
+  }
 
   return (
     <div className="auth-form">
@@ -65,7 +69,7 @@ export const Signup = (props) => {
         </Button>
       </form>
 
-      <Button variant="contained" onClick={() => props.onFormSwitch('Signin')}>
+      <Button variant="contained" onClick={() => switchForm('Signin')}>
         Already have an account? Sign in here!
       </Button>
     </div>

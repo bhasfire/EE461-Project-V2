@@ -1,10 +1,16 @@
 import React, { useState } from "react";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField'; 
+import { useNavigate } from "react-router-dom";
 
 export const Signin = (props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const navigate = useNavigate();
+  const switchForm = () => {
+    navigate("/signup")
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,7 +58,7 @@ export const Signin = (props) => {
           Log In!
         </Button>
       </form>
-      <Button variant="contained" onClick={() => props.onFormSwitch('Signup')}>
+      <Button variant="contained" onClick={() => switchForm('Signup')}>
         If you don't already have an account, register here!
       </Button>
     </div>
