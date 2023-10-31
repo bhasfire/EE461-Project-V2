@@ -59,43 +59,13 @@ def signup():
 
 @auth_bp.route("/signin", methods=["POST"])
 def signin():
-    # try:
-    #     data = request.get_json()
-    #     email = data.get("email").strip().lower()  # Normalize email to lowercase
-    #     password = data.get("password")
-
-    #     print("Received email:", email)
-    #     print("Received password:", password)
-
-    #     # Fetch all users from the database
-    #     users_response = supabase.table("Users").select("*").execute()
-    #     all_users = users_response.get('data', [])
-
-    #     # Manually find the user
-    #     user = next((user for user in all_users if user["Email"].lower() == email), None)
-
-    #     # Print the query result to the console
-    #     print("All users:", all_users)
-    #     print("User data:", user)
-        
-    #     if not user:
-    #         return jsonify({"message": "User not found!"}), 404
-
-    #     # Check if the provided password matches the stored hashed password
-    #     if not bcrypt.checkpw(password.encode('utf-8'), user["Password"].encode('utf-8')):
-    #         return jsonify({"message": "Invalid password!"}), 401
-
-    #     return jsonify({"message": "Signin successful!"}), 200
-    # except Exception as e:
-    #     print("An exception occurred:", str(e))
-    #     return jsonify({"message": "An unexpected error occurred!", "error": str(e)}), 500
     try:
         data = request.get_json()
         email = data.get("email", "").strip().lower()
         password = data.get("password", "")
 
-        print("Received email:", email)
-        print("Received password:", password)
+        #print("Received email:", email)
+        #print("Received password:", password)
 
         # Replace with your actual Supabase URL
         supabase_url = "https://tpbjxnsgkuyljnxiqfsz.supabase.co"
@@ -112,8 +82,8 @@ def signin():
         response = requests.get(url, headers=headers)
         users_response = response.json()
 
-        print("Raw HTTP Request to Supabase:", response.request.url, response.request.headers)
-        print("Users response:", users_response)
+        #print("Raw HTTP Request to Supabase:", response.request.url, response.request.headers)
+        #print("Users response:", users_response)
 
         users = users_response if users_response else []
         user = users[0] if users else None

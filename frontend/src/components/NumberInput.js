@@ -1,8 +1,12 @@
 import TextField from '@mui/material/TextField';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function NumberInput(props) {
     const [inputText, setInputText] = useState("0");
+
+    useEffect(() => {
+        props.getInputFromChild(inputText);
+      }, [inputText]); // This will call getInputFromChild whenever inputText changes
 
     const handleInputChange = e => {
         setInputText(e.target.value);

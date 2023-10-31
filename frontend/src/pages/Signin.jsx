@@ -27,6 +27,7 @@ export const Signin = (props) => {
         const data = await response.json();
         console.log('Response data:', data);
         props.onSignIn(true); // Set isAuthenticated to true
+        localStorage.setItem('user', JSON.stringify(data)); // Save user data to local storage
       } else {
         console.error('Login failed');
         props.onSignIn(false); // Set isAuthenticated to false
@@ -36,6 +37,7 @@ export const Signin = (props) => {
       props.onSignIn(false); // Set isAuthenticated to false
     }
   }
+  
   
   
   return (

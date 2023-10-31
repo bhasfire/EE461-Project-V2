@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
@@ -7,37 +7,88 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import StorageIcon from '@mui/icons-material/Storage';
+import Button from '@mui/material/Button';
 
 const drawerWidth = 240;
 
 export default function PermanentDrawerLeft() {
-  return (
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
+  const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch('http://localhost:8001/projects');
+      if (response.ok) {
+        const data = await response.json();
+        setProjects(data);
+      } else {
+        console.error('Failed to fetch projects');
+      }
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+    }
+  };
+
+  const createNewProject = async () => {
+    const projectName = prompt('Enter project name:');
+    if (projectName) {
+      try {
+        const response = await fetch('http://localhost:8001/projects/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-        }}
-        variant="permanent"
-        anchor="left"
+          body: JSON.stringify({ name: projectName }),
+        });
+        if (response.ok) {
+          fetchProjects(); // Refetch projects after creating a new one
+        } else {
+          console.error('Failed to create project');
+        }
+      } catch (error) {
+        console.error('Error creating project:', error);
+      }
+    }
+  };
+
+  return (
+    <Drawer
+      sx={{
+        width: drawerWidth,
+        flexShrink: 0,
+        '& .MuiDrawer-paper': {
+          width: drawerWidth,
+          boxSizing: 'border-box',
+        },
+      }}
+      variant="permanent"
+      anchor="left"
+    >
+      <h1>Projects</h1>
+      <Divider />
+      <List>
+        {projects.map((project) => (
+          <ListItem key={project.id} disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                <StorageIcon />
+              </ListItemIcon>
+              <ListItemText primary={project.name} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <Button
+        variant="contained"
+        sx={{ m: 1 }}
+        onClick={createNewProject}
       >
-        <h1>Projects</h1>
-        <Divider />
-        <List>
-          {['Project 1', 'Project 2', 'Project 3', 'Project 4'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <StorageIcon />
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
+        Create New Project
+      </Button>
+    </Drawer>
   );
 }
