@@ -97,6 +97,8 @@ def signin():
             return jsonify({"message": "Invalid password!"}), 401
 
         return jsonify({"message": "Signin successful!"}), 200
+    except RuntimeError as e:
+        pass
     except Exception as e:
         print("An exception occurred:", str(e))
         return jsonify({"message": "An unexpected error occurred!", "error": str(e)}), 500
