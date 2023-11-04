@@ -1,3 +1,4 @@
+from flask import Blueprint, request, jsonify
 from supabase_py import create_client, Client
 import logging
 
@@ -24,10 +25,16 @@ def create_project(name):
 
 
 def get_projects():
-    projects, error = supabase.table("Projects").select("*").execute()
+    data, error = supabase.table("Projects").select("project_name").execute()
+
+    # Extract the project names into a list of strings
+    project_names = [project['project_name'] for project in data.data]
     
     if error:
         logging.error(f"Error fetching projects: {error}")
         return []
     
-    return projects
+    print(data)
+    print(project_names)
+    
+    return project_names

@@ -20,9 +20,14 @@ export default function PermanentDrawerLeft() {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch('http://localhost:8001/projects');
+      const response = await fetch('http://127.0.0.1:8001/project/getprojects');
       if (response.ok) {
         const data = await response.json();
+        // const data = [
+        //   { id: 1, name: 'Project 1' },
+        //   { id: 2, name: 'Project 2' },
+        //   { id: 3, name: 'Project 3' },
+        // ];
         setProjects(data);
       } else {
         console.error('Failed to fetch projects');
@@ -36,7 +41,7 @@ export default function PermanentDrawerLeft() {
     const projectName = prompt('Enter project name:');
     if (projectName) {
       try {
-        const response = await fetch('http://localhost:8001/projects/create', {
+        const response = await fetch('http://localhost:8001/project/create', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -76,7 +81,7 @@ export default function PermanentDrawerLeft() {
               <ListItemIcon>
                 <StorageIcon />
               </ListItemIcon>
-              <ListItemText primary={project.name} />
+              <ListItemText primary={project.project_name} />
             </ListItemButton>
           </ListItem>
         ))}
