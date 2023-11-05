@@ -23,10 +23,4 @@ def create_project_route():
 @project_bp.route("/getprojects", methods=["GET"])
 def get_projects_route():
     data = supabase.table("Projects").select("project_name").execute()
-
-    # converted_data = [
-    #     {"id": idx + 1, "name": project['project_name']}
-    #     for idx, project in enumerate(data)
-    # ]
-
     return jsonify(data['data']), 200
