@@ -24,7 +24,7 @@ export default function AutoGrid(props) {
     setTextField(input);
   }
 
-  const [availability, setAvailability] = React.useState(50);
+  const [availability, setAvailability] = React.useState(props.availability);
   function checkIn() {
     if (!isNaN(Number(textField)) && Number(textField) + availability <= 100 && Number(textField) + availability >= 0) {
       setAvailability(Number(textField) + availability);

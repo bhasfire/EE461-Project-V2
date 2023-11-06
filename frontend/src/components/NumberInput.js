@@ -12,8 +12,6 @@ export default function NumberInput(props) {
         setInputText(e.target.value);
     };
 
-    props.getInputFromChild(inputText);
-
     return(
         <TextField
             id="outlined-number"
