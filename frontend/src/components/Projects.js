@@ -32,20 +32,6 @@ export default function PermanentDrawerLeft() {
     fetchProjectsWithId();
   }, []);
 
-  const fetchProjects = async () => {
-    try {
-      const response = await fetch('http://127.0.0.1:8001/project/getprojects');
-      if (response.ok) {
-        const data = await response.json();
-        setProjects(data);
-      } else {
-        console.error('Failed to fetch projects');
-      }
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-    }
-  };
-
 //---------------------------------------------
 // Create Project Dialog
 //---------------------------------------------
@@ -115,7 +101,6 @@ export default function PermanentDrawerLeft() {
     setSnackbarOpen(false);
   };
 
-
   const fetchProjectsWithId = async () => {
     try {
       const response = await fetch('http://127.0.0.1:8001/project/getprojectswithids');
@@ -131,7 +116,6 @@ export default function PermanentDrawerLeft() {
     }
   };
   
-
   const joinProject = async (projectId) => {
     // Retrieve the user data from local storage
     const storedUser = localStorage.getItem('user');
@@ -172,8 +156,6 @@ export default function PermanentDrawerLeft() {
   }
 };
   
-  
-
   return (
     <Drawer
       sx={{

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from supabase_py import create_client, Client
+from supabase import create_client, Client
 import bcrypt
 import requests
 
@@ -16,27 +16,26 @@ def signup():
         print("Received data:", data)
 
         email = data.get("email")
-        password = data.get("password").encode('utf-8')  # Convert password to bytes
+        password = data.get("password")
         first_name = data.get("firstName")
         last_name = data.get("lastName")
 
         print("Extracted values:", email, password, first_name, last_name)
 
         # Step 1: Hash the password
-        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt()).decode('utf-8')
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         print("Hashed password:", hashed_password)
 
+        # *** Either do this OR do manual hashing ***
+        
         # Step 2: Sign up the user using Supabase's authentication
-        response = supabase.auth.sign_up(email, password.decode('utf-8'))
-        print("Full Supabase response:", response)
-        print("Sign-up response:", response)
-        # Check for error in a more specific manner
-        error = response.get("error") or (response.get("data") and response.get("data").get("error"))
-        if error:
-            return jsonify({"message": "Signup failed at Supabase auth!", "error": str(error)}), 400
-
+        # response = supabase.auth.sign_up({
+        #     "email": email,
+        #     "password": password,
+        # })
+        # print("Full Supabase response:", response)
+        
         # Step 3: Insert user details into the "Users" table
-        table = supabase.table("Users")
         data_to_insert = {
             "First Name": first_name,
             "Last Name": last_name,
@@ -45,13 +44,9 @@ def signup():
         }
 
         print("Attempting to insert data:", data_to_insert)
-        user_insert_response = table.insert(data_to_insert).execute()
+        user_insert_response = supabase.table("Users").insert(data_to_insert).execute()
         print("Insert response:", user_insert_response)
-
-        if user_insert_response.get("error"):
-            return jsonify({"message": "Failed to save user details at database insertion!", "error": user_insert_response.get("error")}), 400
-
-        return jsonify({"message": "Signup successful!", "user": response.get('data')}), 200
+        return jsonify({"message": "Signup successful!", "user": user_insert_response.data}), 200
 
     except Exception as e:
         print("An exception occurred:", str(e))
@@ -64,26 +59,29 @@ def signin():
         email = data.get("email", "").strip().lower()
         password = data.get("password", "")
 
-        #print("Received email:", email)
-        #print("Received password:", password)
+        print("Received email:", email)
+        print("Received password:", password)
 
-        # Replace with your actual Supabase URL
-        supabase_url = "https://tpbjxnsgkuyljnxiqfsz.supabase.co"
-        api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwYmp4bnNna3V5bGpueGlxZnN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTYxMTI5NjIsImV4cCI6MjAxMTY4ODk2Mn0.lTYIrdhUz9qe2PdwKN-zbBDScqIHA7u97iatoIazqmc"
+        # *** Either do this OR do manual hashing ***
+        
+        # response = supabase.auth.sign_in_with_password({
+        #     "email": email, 
+        #     "password": password
+        # })
 
         # Construct the raw HTTP request to Supabase
-        url = f"{supabase_url}/rest/v1/Users?select=*&Email=eq.{email}"
+        url = f"{supabaseUrl}/rest/v1/Users?select=*&Email=eq.{email}"
         headers = {
-            "apikey": api_key,
-            "Authorization": f"Bearer {api_key}",
+            "apikey": supabaseKey,
+            "Authorization": f"Bearer {supabaseKey}",
             "Content-Type": "application/json",
             "Prefer": "return=representation",
         }
         response = requests.get(url, headers=headers)
         users_response = response.json()
 
-        #print("Raw HTTP Request to Supabase:", response.request.url, response.request.headers)
-        #print("Users response:", users_response)
+        print("Raw HTTP Request to Supabase:", response.request.url, response.request.headers)
+        print("Users response:", users_response)
 
         users = users_response if users_response else []
         user = users[0] if users else None
@@ -96,14 +94,12 @@ def signin():
         if not bcrypt.checkpw(password.encode('utf-8'), user["Password"].encode('utf-8')):
             return jsonify({"message": "Invalid password!"}), 401
         
-
         # Remove sensitive information from the user data before sending
         user.pop("Password", None)
 
         # Return user data including the UserID
         return jsonify(user), 200
 
-        return jsonify({"message": "Signin successful!"}), 200
     except RuntimeError as e:
         pass
     except Exception as e:
@@ -112,5 +108,7 @@ def signin():
     
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
-    supabase.auth.sign_out()
+    # *** Either do this OR do manual hashing ***
+    
+    # response = supabase.auth.sign_out()
     return jsonify({"message": "Logged out successfully!"}), 200
