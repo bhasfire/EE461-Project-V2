@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS
-from services.project_service import create_project, get_projects
+from services.project_service import create_project, get_projects, join_project, get_projects_with_ids
 from supabase_py import create_client, Client
 import logging
 
@@ -23,10 +23,32 @@ def create_project_route():
 @project_bp.route("/getprojects", methods=["GET"])
 def get_projects_route():
     data = supabase.table("Projects").select("project_name").execute()
-
-    # converted_data = [
-    #     {"id": idx + 1, "name": project['project_name']}
-    #     for idx, project in enumerate(data)
-    # ]
-
     return jsonify(data['data']), 200
+
+
+@project_bp.route("/getprojectswithids", methods=["GET"])
+def get_projects_with_ids_route():
+    result = get_projects_with_ids()
+    if result['error']:
+        return jsonify({"message": "Failed to fetch projects", "error": result['error']}), 500
+    return jsonify(result['data']), 200
+
+
+
+@project_bp.route('/join', methods=['POST'])
+def join_project_route():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    project_id = data.get('project_id')
+
+    if not user_id or not project_id:
+        return jsonify({"message": "User ID and Project ID are required"}), 400
+
+    success = join_project(user_id, project_id)
+    if success:
+        return jsonify({"message": "Successfully joined project"}), 200
+    else:
+        return jsonify({"message": "Failed to join project"}), 400
+
+
+

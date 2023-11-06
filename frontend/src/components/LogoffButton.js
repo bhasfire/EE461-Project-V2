@@ -7,6 +7,7 @@ function LogoffButton({ onLogoff }) {  // Accept onLogoff as a prop
 
   const handleLogoff = async () => {
     console.log("Logoff button clicked");
+    localStorage.removeItem('user');
     if (onLogoff) {
       console.log("Calling onLogoff");
       await onLogoff();
