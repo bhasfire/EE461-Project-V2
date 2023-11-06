@@ -12,10 +12,13 @@ def create_project(name, id):
     print("Supabase Response:", response)
     return response.data[0]
 
-def get_projects_with_ids():
+def get_projects_with_ids(user_id):
     try:
         logging.info("Attempting to fetch projects with IDs from Supabase")
-        response = supabase.table("Projects").select("project_id, project_name").execute()
+        response = supabase.table("Users").select("Projects").eq("UserID", str(user_id)).execute()
+        ids = list(response.data[0]["Projects"].keys())
+        ids = [int(x) for x in ids]
+        response = supabase.table("Projects").select("*").in_("project_id", ids).execute()
         data = response.data
         logging.info("Fetched projects successfully: {}".format(data))
         return {"data": data, "error": None}

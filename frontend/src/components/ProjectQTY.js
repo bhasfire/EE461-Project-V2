@@ -84,7 +84,7 @@ export default function AutoGrid(props) {
           <Item>{props.name}</Item>
         </Grid>
         <Grid xs={8} display="flex" justifyContent="center" alignItems="center">
-          <CapacityBar value={100*availability/capacity} availability={availability} capacity={capacity}/>
+          <CapacityBar value={availability} total={capacity}/>
         </Grid>
         <Grid xs>
           <NumberInput capacity={capacity} getInputFromChild={getInputFromChild}/>

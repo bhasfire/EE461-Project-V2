@@ -40,7 +40,8 @@ def signup():
             "First Name": first_name,
             "Last Name": last_name,
             "Email": email,
-            "Password": hashed_password  # Save hashed password
+            "Password": hashed_password,  # Save hashed password
+            "Projects": {}
         }
 
         print("Attempting to insert data:", data_to_insert)
