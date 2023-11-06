@@ -26,13 +26,13 @@ export default function AutoGrid(props) {
 
   const [availability, setAvailability] = React.useState(props.availability);
   function checkIn() {
-    if (!isNaN(Number(textField)) && Number(textField) + availability <= 100 && Number(textField) + availability >= 0) {
+    if (!isNaN(Number(textField)) && Number(textField) + availability <= props.capacity && Number(textField) + availability >= 0) {
       setAvailability(Number(textField) + availability);
     }
   }
 
   function checkOut() {
-    if (!isNaN(Number(textField)) && availability - Number(textField) <= 100 && availability - Number(textField) >= 0) {
+    if (!isNaN(Number(textField)) && availability - Number(textField) <= props.capacity && availability - Number(textField) >= 0) {
       setAvailability(availability - Number(textField));
     }
   }
@@ -44,7 +44,7 @@ export default function AutoGrid(props) {
           <Item>{props.name}</Item>
         </Grid>
         <Grid xs={8} display="flex" justifyContent="center" alignItems="center">
-          <CapacityBar value={availability}/>
+          <CapacityBar value={availability} capacity={props.capacity}/>
         </Grid>
         <Grid xs>
           <NumberInput getInputFromChild={getInputFromChild}/>

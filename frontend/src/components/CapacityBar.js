@@ -12,7 +12,7 @@ function LinearProgressWithLabel(props) {
       </Box>
       <Box sx={{ minWidth: 35 }}>
       <Typography variant="body2" color="text.primary" align="center" sx={{ color: 'black' }}>
-        {`Available/Capacity: ${Math.round(props.value)}/100`}
+        {`Available/Capacity: ${Math.round(props.availability)}/${Math.round(props.capacity)}`}
       </Typography>
       </Box>
     </Box>
@@ -30,7 +30,7 @@ LinearProgressWithLabel.propTypes = {
 export default function LinearDeterminate(props) {
   return (
     <Box sx={{ width: '100%' }}>
-      <LinearProgressWithLabel value={props.value} />
+      <LinearProgressWithLabel value={props.value * 100 / props.capacity} availability={props.value} capacity={props.capacity} />
     </Box>
   );
 }
