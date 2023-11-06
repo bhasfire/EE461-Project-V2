@@ -95,6 +95,13 @@ def signin():
         # Check if the provided password matches the stored hashed password
         if not bcrypt.checkpw(password.encode('utf-8'), user["Password"].encode('utf-8')):
             return jsonify({"message": "Invalid password!"}), 401
+        
+
+        # Remove sensitive information from the user data before sending
+        user.pop("Password", None)
+
+        # Return user data including the UserID
+        return jsonify(user), 200
 
         return jsonify({"message": "Signin successful!"}), 200
     except RuntimeError as e:

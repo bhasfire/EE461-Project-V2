@@ -25,9 +25,16 @@ export const Signin = (props) => {
   
       if (response.ok) {
         const data = await response.json();
-        console.log('Response data:', data);
+        console.log('Sign in successful. User data:', data);
+        if (data.UserID) {
+          console.log('User ID:', data.UserID);
+        } else {
+          console.log('User ID not found in the response.');
+        }
         props.onSignIn(true); // Set isAuthenticated to true
-        localStorage.setItem('user', JSON.stringify(data)); // Save user data to local storage
+        // Save user data to local storage
+        localStorage.setItem('user', JSON.stringify(data));
+        navigate("/dashboard"); // Navigate to dashboard after successful login
       } else {
         console.error('Login failed');
         props.onSignIn(false); // Set isAuthenticated to false
@@ -37,8 +44,6 @@ export const Signin = (props) => {
       props.onSignIn(false); // Set isAuthenticated to false
     }
   }
-  
-  
   
   return (
     <div className="auth-form">

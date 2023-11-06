@@ -26,7 +26,7 @@ def create_project(name, id):
 
 
 def get_projects():
-    data, error = supabase.table("Projects").select("project_name").execute()
+    data, error = supabase.table("Projects").select("project_id, project_name").execute()
 
     # Extract the project names into a list of strings
     project_names = [project['project_name'] for project in data.data]
@@ -36,6 +36,41 @@ def get_projects():
         return []
 
     print(data)
-    print(project_names)
+    
+    return data.data
 
-    return project_names
+def get_projects_with_ids():
+    try:
+        logging.info("Attempting to fetch projects with IDs from Supabase")
+        response = supabase.table("Projects").select("project_id, project_name").execute()
+        data = response.get('data')
+        error = response.get('error')
+
+        if error:
+            logging.error(f"Supabase error: {error}")
+            logging.error(f"Full Supabase response: {response}")
+            return {"data": [], "error": str(error)}
+
+        logging.info("Fetched projects successfully: {}".format(data))
+        return {"data": data, "error": None}
+
+    except Exception as e:
+        logging.error(f"Exception in get_projects_with_ids: {e}")
+        return {"data": [], "error": str(e)}
+
+
+
+def join_project(user_id, project_id):
+    membership_data = {
+        "project_id": project_id,
+        "user_id": user_id
+    }
+    membership_response, error = supabase.table("ProjectMembers").insert(membership_data).execute()
+
+    if error:
+        logging.error(f"Error joining project: {error}")
+        return {"success": False, "message": str(error)}
+
+    return {"success": True, "message": "Joined project successfully"}
+
+
