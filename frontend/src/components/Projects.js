@@ -19,6 +19,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import NumberInput from './NumberInput';
 import Card from '@mui/material/Card';
+import LogoffButton from '../components/LogoffButton';
 
 
 
@@ -26,7 +27,8 @@ import Box from '@mui/material/Box';
 
 const drawerWidth = 240;
 
-export default function PermanentDrawerLeft() {
+export default function PermanentDrawerLeft(onLogoff) {
+  const [pid, setPID] = useState(0)
   const [projects, setProjects] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [projectId, setProjectId] = useState('');
@@ -109,6 +111,7 @@ export default function PermanentDrawerLeft() {
   };
 
   const handleSetProject = (project_id) => {
+    setPID(project_id);
     localStorage.setItem('project', JSON.stringify(project_id));
     console.log("project set to id: " + JSON.stringify(project_id));
   }
@@ -204,7 +207,11 @@ export default function PermanentDrawerLeft() {
           <ListItem 
             key={project.project_id} 
             disablePadding
-            sx={{ position: 'relative', '&:hover .joinButton': { display: 'block' } }}
+            sx={{ 
+              position: 'relative', 
+              '&:hover .joinButton': { display: 'block' }, 
+              backgroundColor: pid == project.project_id ? 'lightblue' : 'transparent'
+            }}
           >
             <ListItemButton onClick={() => handleSetProject(project.project_id)}>
               <ListItemIcon>
@@ -239,15 +246,12 @@ export default function PermanentDrawerLeft() {
         </IconButton>
       }
     />
-    <Card style={{backgroundColor: "white"}}>
-    <Button
-        variant="contained"
-        sx={{ m: 1 }}
-        onClick={handleCreateProjectDialog}
-      >
-        Create New Project
-      </Button>
-      <NumberInput getInputFromChild={getInputFromChild}/>
+    
+    
+      <Card style={{backgroundColor: "white"}}>
+      <div style={{ margin: '8px' }}>
+        <NumberInput getInputFromChild={getInputFromChild} />
+      </div>
       <Button
         variant="contained"
         sx={{ m: 1 }}
@@ -255,7 +259,15 @@ export default function PermanentDrawerLeft() {
       >
         Join Project
       </Button>
+      
     </Card>
+    <Button
+        variant="contained"
+        sx={{ m: 2 }}
+        onClick={handleCreateProjectDialog}
+      >
+        Create New Project
+      </Button>
       
       
       <Dialog open={openDialog} onClose={handleCloseDialog}>
@@ -291,6 +303,16 @@ export default function PermanentDrawerLeft() {
           <Button onClick={handleConfirmCreateProject}>Confirm</Button>
         </DialogActions>
       </Dialog>
+      <div style={{
+        position: 'absolute',
+        bottom: 50,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+      }}>
+        <LogoffButton onLogoff={onLogoff} /> {/* Pass onLogoff to LogoffButton */}
+      </div>
     </Drawer>
   );
 }

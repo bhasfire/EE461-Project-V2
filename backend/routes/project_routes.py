@@ -67,31 +67,13 @@ def get_project():
     try:
         logging.info("Attempting to fetch project with ID from Supabase")
         response = supabase.table("Projects").select("hw1_qty, hw2_qty").eq("project_id", project_id).execute()
-        data = response.data
+        data = response.data[0]
         logging.info("Fetched project successfully: {}".format(data))
         return jsonify(data), 200
     except Exception as e:
         logging.error(f"Exception in get_project: {e}")
         return jsonify({"message": "Failed to fetch project", "error": str(e)}), 500    
-    
-@project_bp.route("/setproject", methods=["POST"])
-def set_project():
-    data = request.get_json()
-    project_id = data.get('project_id')
-    hw1_set = data.get('hw1_set')
-    hw2_set = data.get('hw2_set')
-    try:
-        logging.info("Attempting to fetch project with ID from Supabase")
-        response = supabase.table("Projects").select("hw1_qty, hw2_qty").eq("project_id", project_id).execute()
-        entry = response.data[0]
-        entry["hw1_qty"] += hw1_set
-        entry["hw2_qty"] += hw2_set
-        response = supabase.table("Projects").update(entry).eq("project_id", project_id).execute()
-        return jsonify(response.data), 200
-    except Exception as e:
-        logging.error(f"Exception in get_projects_with_ids: {e}")
-        return jsonify({"message": "Failed to fetch project", "error": str(e)}), 500 
-    
+
 @project_bp.route("/gethardware", methods=["POST"])
 def get_hardware():
     data = request.get_json()
@@ -106,26 +88,41 @@ def get_hardware():
         return jsonify(data), 200
     except Exception as e:
         logging.error(f"Exception in get_hardware: {e}")
-        return jsonify({"message": "Failed to fetch hardware", "error": str(e)}), 500    
-    
+        return jsonify({"message": "Failed to fetch hardware", "error": str(e)}), 500  
+
 @project_bp.route("/sethardware", methods=["POST"])
 def set_hardware():
     data = request.get_json()
+    project_id = data.get('project_id')
     hardware_id = data.get('hardware_id')
     set = data.get('set')
     try:
         logging.info("Attempting to fetch project with ID from Supabase")
-        response = supabase.table("Hardware").select("capacity, availability").eq("hardware_id", hardware_id).execute()
-        entry = response.data[0]
-        sum = entry["availability"] + set
-        if(sum < 0 or sum > entry["capacity"]):
-            raise Exception("invalid checkin/out") 
-        entry["availability"] = sum
-        response = supabase.table("Hardware").update(entry).eq("hardware_id", hardware_id).execute()
-        return jsonify(response.data), 200
+        project_response = supabase.table("Projects").select("hw1_qty, hw2_qty").eq("project_id", project_id).execute()
+        project_entry = project_response.data[0]
+        hardware_response = supabase.table("Hardware").select("capacity, availability").eq("hardware_id", hardware_id).execute()
+        hardware_entry = hardware_response.data[0]
+        hardware_sum = hardware_entry["availability"] + set
+        if(hardware_sum > hardware_entry["capacity"]):
+            raise Exception("invalid checkin") 
+        if(hardware_sum < 0):
+            raise Exception("invalid checkout") 
+        if(hardware_id == 1 and set > project_entry["hw1_qty"]):
+            raise Exception("invalid checkout") 
+        if(hardware_id == 2 and set > project_entry["hw2_qty"]):
+            raise Exception("invalid checkout")  
+        if(hardware_id == 1):
+            project_entry["hw1_qty"] -= set  
+        else:
+            project_entry["hw2_qty"] -= set
+        hardware_entry["availability"] = hardware_sum
+        response = supabase.table("Projects").update(project_entry).eq("project_id", project_id).execute()
+        response = supabase.table("Hardware").update(hardware_entry).eq("hardware_id", hardware_id).execute()
+        
+        return jsonify(response.data[0]), 200
     except Exception as e:
-        logging.error(f"Exception in set_hardware: {e}")
-        return jsonify({"message": "Failed to update hardware", "error": str(e)}), 500 
+        logging.error(f"Exception in get_projects_with_ids: {e}")
+        return jsonify({"message": "Failed to fetch project", "error": str(e)}), 500   
 
 @project_bp.route('/join', methods=['POST'])
 def join_project_route():
