@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS
-from services.project_service import create_project, get_projects
+from services.project_service import create_project, get_projects, join_project, get_projects_with_ids
 from supabase_py import create_client, Client
 import logging
 
@@ -14,19 +14,77 @@ CORS(project_bp)
 @project_bp.route("/create", methods=["POST"])
 def create_project_route():
     data = request.get_json()
-    project_name = data.get("name")
-    if not project_name:
-        return jsonify({"message": "Project name is required"}), 400
-    project = create_project(project_name)
-    return jsonify(project), 201
+    project_id = int(data.get("projectId"))
+    project_name = data.get("projectName")
+
+    if not data:
+        return jsonify({"message": "No data provided"}), 400
+
+    # Fetch the list of project IDs and names
+    project_ids = [item['project_id'] for item in supabase.table("Projects").select("project_id").execute()['data']]
+    project_names = [item['project_name'] for item in supabase.table("Projects").select("project_name").execute()['data']]
+
+    print(project_ids)
+    print(project_names)
+
+    # Project ID already in use
+    if project_id in project_ids:
+        return jsonify({"Error Message": "ERROR WITH ID"}), 403
+
+    # Project name already in use
+    if project_name in project_names:
+        return jsonify({"Error Message": "ERROR WITH NAME"}), 403
+
+    else:
+        project = create_project(project_name, project_id)
+        return jsonify(project), 201
+
+# @project_bp.route("/create", methods=["POST"])
+# def create_project_route():
+#     data = request.get_json()
+#     project_name = data.get("name")
+#     if not project_name:
+#         return jsonify({"message": "Project name is required"}), 400
+#     project = create_project(project_name)
+#     return jsonify(project), 201
+
+
+
+def project_name_exists(project_name):
+    # Check for project name in the database
+    result = supabase.table("Projects").select("project_name").eq("project_name", project_name).execute()
+    return bool(result['data'])
+
 
 @project_bp.route("/getprojects", methods=["GET"])
 def get_projects_route():
     data = supabase.table("Projects").select("project_name").execute()
-
-    # converted_data = [
-    #     {"id": idx + 1, "name": project['project_name']}
-    #     for idx, project in enumerate(data)
-    # ]
-
     return jsonify(data['data']), 200
+
+
+@project_bp.route("/getprojectswithids", methods=["GET"])
+def get_projects_with_ids_route():
+    result = get_projects_with_ids()
+    if result['error']:
+        return jsonify({"message": "Failed to fetch projects", "error": result['error']}), 500
+    return jsonify(result['data']), 200
+
+
+
+@project_bp.route('/join', methods=['POST'])
+def join_project_route():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    project_id = data.get('project_id')
+
+    if not user_id or not project_id:
+        return jsonify({"message": "User ID and Project ID are required"}), 400
+
+    success = join_project(user_id, project_id)
+    if success:
+        return jsonify({"message": "Successfully joined project"}), 200
+    else:
+        return jsonify({"message": "Failed to join project"}), 400
+
+
+
