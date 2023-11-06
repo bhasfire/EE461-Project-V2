@@ -17,20 +17,14 @@ def get_hardware_route():
 
     return jsonify(data), 200
 
-@hardware_bp.route("/checkout", methods=["GET"])
+@hardware_bp.route("/checkout", methods=["POST"])
 def checkout_route():
     data = request.get_json()
-    user_id = data.get("user_id")
-    project_id = data.get("project_id")
     hardware_id = data.get("hardware_id")
     quantity = data.get("quantity")
-    if not user_id:
-        return jsonify({"message": "User ID is required"}), 400
-    if not project_id:
-        return jsonify({"message": "Project ID is required"}), 400
     if not hardware_id:
         return jsonify({"message": "Hardware ID is required"}), 400
     if not quantity:
         return jsonify({"message": "Quantity is required"}), 400
-    checkout = check_out(user_id, project_id, hardware_id, quantity)
+    checkout = check_out(hardware_id, quantity)
     return jsonify(checkout), 201

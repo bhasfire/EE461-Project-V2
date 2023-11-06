@@ -14,27 +14,34 @@ def get_hardware():
 
     return data
 
-def check_out(user_id, project_id, hardware_id, quantity):
-    data = {"user_id": user_id, "project_id": project_id, "hardware_id": hardware_id, "quantity": quantity}
-    check_out_response, check_out_error = supabase.table("Checkouts").insert(data).execute()
-    availability = supabase.table("Hardware").select("availability").eq("hardware_id", hardware_id).execute()
-    hardware_response, hardware_error = supabase.table("Hardware").update({'availability': availability - quantity}).eq("hardware_id", hardware_id).gte('availability', quantity).execute()
+def check_out(hardware_id, quantity):
+    # data = {"user_id": user_id, "project_id": project_id, "hardware_id": hardware_id, "quantity": quantity}
+    # check_out_response, check_out_error = supabase.table("Checkouts").insert(data).execute()
+    data = {"hardware_id": hardware_id, "quantity": quantity}
+    print(hardware_id)
+    availability = supabase.table("Hardware").select("availability").eq('hardware_id', str(hardware_id)).execute()
+    availability = availability.get('data')[0].get('availability')
+    hardware_response = None
+    if (availability >= int(quantity)):
+        newAvailability = availability - int(quantity)
+        print(newAvailability)
+        print(str(hardware_id))
+        hardware_response = supabase.table("Hardware").update({"availability": newAvailability}).eq("hardware_id", str(hardware_id)).execute()
 
-    print("Checkout Response:", check_out_response)
-    print("Checkout Error:", check_out_error)
+    # print("Checkout Response:", check_out_response)
+    # print("Checkout Error:", check_out_error)
     print("Hardware Response:", hardware_response)
-    print("Hardware Error:", hardware_error)
 
-    if check_out_error:
-        logging.error(f"Error checking out: {check_out_error}")
-        return None
+    # if check_out_error:
+    #     logging.error(f"Error checking out: {check_out_error}")
+    #     return None
     
-    if hardware_error:
-        logging.error(f"Error updating hardware: {hardware_error}")
-        return None
+    # if hardware_error:
+    #     logging.error(f"Error updating hardware: {hardware_error}")
+    #     return None
 
-    if 'data' not in check_out_response or not check_out_response['data']:
-        logging.error(f"Unexpected response from Supabase: {check_out_response}")
-        return None
+    # if 'data' not in check_out_response or not check_out_response['data']:
+    #     logging.error(f"Unexpected response from Supabase: {check_out_response}")
+    #     return None
 
-    return check_out_response, hardware_response
+    return hardware_response

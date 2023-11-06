@@ -32,6 +32,7 @@ export default function AutoGrid(props) {
   }
 
   function checkOut() {
+    props.checkout(props.id, textField)
     if (!isNaN(Number(textField)) && availability - Number(textField) <= props.capacity && availability - Number(textField) >= 0) {
       setAvailability(availability - Number(textField));
     }
