@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField'; 
 import { useNavigate } from "react-router-dom";
+import Typography from '@mui/material/Typography';
+
 
 export const Signin = (props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginFailed, setLoginFailed] = useState(false);  // State to track login failure
 
   const navigate = useNavigate();
   const switchForm = () => {
@@ -14,6 +17,7 @@ export const Signin = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoginFailed(false); // Reset the login failed state on new submission
     try {
       const response = await fetch('http://127.0.0.1:8001/auth/signin', {
         method: 'POST',
@@ -32,11 +36,11 @@ export const Signin = (props) => {
           console.log('User ID not found in the response.');
         }
         props.onSignIn(true); // Set isAuthenticated to true
-        // Save user data to local storage
-        localStorage.setItem('user', JSON.stringify(data));
+        localStorage.setItem('user', JSON.stringify(data)); // Save user data to local storage
         navigate("/dashboard"); // Navigate to dashboard after successful login
       } else {
         console.error('Login failed');
+        setLoginFailed(true); // Set login failed to true
         props.onSignIn(false); // Set isAuthenticated to false
       }
     } catch (error) {
@@ -47,6 +51,9 @@ export const Signin = (props) => {
   
   return (
     <div className="auth-form">
+    <Typography variant="h5" component="h2" gutterBottom style={{ color: 'darkgray' }}>
+      Welcome to Hardware Checkout
+    </Typography>
       <form className="signin-form" onSubmit={handleSubmit}>
         <TextField
           label="Email"
@@ -68,6 +75,11 @@ export const Signin = (props) => {
       <Button variant="contained" onClick={() => switchForm('Signup')}>
         If you don't already have an account, register here!
       </Button>
+      {loginFailed && (
+        <Typography color="error" gutterBottom>
+          Login Failed
+        </Typography>
+      )}
     </div>
   )
 }
