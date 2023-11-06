@@ -27,7 +27,7 @@ import Box from '@mui/material/Box';
 
 const drawerWidth = 240;
 
-export default function PermanentDrawerLeft(onLogoff) {
+export default function PermanentDrawerLeft({onLogoff}) {
   const [pid, setPID] = useState(0)
   const [projects, setProjects] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
