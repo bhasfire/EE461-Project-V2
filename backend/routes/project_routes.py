@@ -11,33 +11,33 @@ supabase: Client = create_client(supabaseUrl, supabaseKey)
 project_bp = Blueprint('project', __name__)
 CORS(project_bp)
 
-# @project_bp.route("/create", methods=["POST"])
-# def create_project_route():
-#     data = request.get_json()
-#     project_id = int(data.get("projectId"))
-#     project_name = data.get("projectName")
+@project_bp.route("/create", methods=["POST"])
+def create_project_route():
+    data = request.get_json()
+    project_id = int(data.get("projectId"))
+    project_name = data.get("projectName")
 
-#     if not data:
-#         return jsonify({"message": "No data provided"}), 400
+    if not data:
+        return jsonify({"message": "No data provided"}), 400
 
-#     # Fetch the list of project IDs and names
-#     project_ids = [item['project_id'] for item in supabase.table("Projects").select("project_id").execute()['data']]
-#     project_names = [item['project_name'] for item in supabase.table("Projects").select("project_name").execute()['data']]
+    # Fetch the list of project IDs and names
+    project_ids = [item['project_id'] for item in supabase.table("Projects").select("project_id").execute()['data']]
+    project_names = [item['project_name'] for item in supabase.table("Projects").select("project_name").execute()['data']]
 
-#     print(project_ids)
-#     print(project_names)
+    print(project_ids)
+    print(project_names)
 
-#     # Project ID already in use
-#     if project_id in project_ids:
-#         return jsonify({"Error Message": "ERROR WITH ID"}), 403
+    # Project ID already in use
+    if project_id in project_ids:
+        return jsonify({"Error Message": "ERROR WITH ID"}), 403
 
-#     # Project name already in use
-#     if project_name in project_names:
-#         return jsonify({"Error Message": "ERROR WITH NAME"}), 403
+    # Project name already in use
+    if project_name in project_names:
+        return jsonify({"Error Message": "ERROR WITH NAME"}), 403
 
-#     else:
-#         project = create_project(project_name, project_id)
-#         return jsonify(project), 201
+    else:
+        project = create_project(project_name, project_id)
+        return jsonify(project), 201
 
 # @project_bp.route("/create", methods=["POST"])
 # def create_project_route():
@@ -47,57 +47,6 @@ CORS(project_bp)
 #         return jsonify({"message": "Project name is required"}), 400
 #     project = create_project(project_name)
 #     return jsonify(project), 201
-
-
-
-# This function tries to get the project ID from both possible keys
-def get_project_id(data):
-    return data.get('project_id') or data.get('projectId')
-
-# This function tries to get the project name from both possible keys
-def get_project_name(data):
-    return data.get('project_name') or data.get('projectName')
-
-@project_bp.route("/create", methods=["POST"])
-def create_project_route():
-    data = request.get_json()
-    logging.info(f"Received data for project creation: {data}")
-
-    project_id = get_project_id(data)
-    project_name = get_project_name(data)
-
-    if not data:
-        logging.error("No data provided for project creation.")
-        return jsonify({"message": "No data provided"}), 400
-
-    if not project_name:
-        logging.error("Project name is required for project creation.")
-        return jsonify({"message": "Project name is required"}), 400
-
-    if not project_id:
-        logging.error("Project ID is required for project creation.")
-        return jsonify({"message": "Project ID is required"}), 400
-
-    # Here you would have to convert the project_id to int if necessary
-    project_id = int(project_id)
-
-    if project_id_exists(project_id):
-        logging.error(f"Project ID {project_id} already in use.")
-        return jsonify({"Error Message": "Project ID already in use"}), 409
-
-    if project_name_exists(project_name):
-        logging.error(f"Project name {project_name} already in use.")
-        return jsonify({"Error Message": "Project name already in use"}), 409
-
-    project = create_project(project_name, project_id)
-    return jsonify(project), 201
-
-# Define the functions to check if the project ID or name exists
-def project_id_exists(project_id):
-    # Check for project ID in the database
-    result = supabase.table("Projects").select("project_id").eq("project_id", project_id).execute()
-    return bool(result['data'])
-
 
 
 

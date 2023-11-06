@@ -66,6 +66,8 @@ export default function PermanentDrawerLeft() {
       projectName: projectName
     };
 
+    console.log('Creating project with payload:', payload);
+
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -79,7 +81,7 @@ export default function PermanentDrawerLeft() {
       if (response.ok) {
         const jsonResponse = await response.json();
         // Handle success
-        fetchProjects();
+        fetchProjectsWithId();
       } else {
         // Handle server errors
         handleOpenSnackbar('Failed to Create Project');
@@ -120,6 +122,7 @@ export default function PermanentDrawerLeft() {
       if (response.ok) {
         const data = await response.json();
         setProjects(data);
+        console.log('Projects fetched with IDs:', data);
       } else {
         console.error('Failed to fetch projects with ID');
       }
@@ -146,7 +149,7 @@ export default function PermanentDrawerLeft() {
     console.log('Attempting to join project with User ID:', userId, 'and Project ID:', projectId);
   
     try {
-      const response = await fetch('http://localhost:8001/project/join', {
+      const response = await fetch('http://127.0.0.1:8001/project/join', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -155,10 +158,11 @@ export default function PermanentDrawerLeft() {
       });
 
       if (response.ok) {
-          console.log('Joined project successfully');
+          console.log('Joined project successfully', await response.json());
           // Trigger any state updates or user feedback here
       } else {
-          const errorData = await response.json(); // Assuming the backend sends back a JSON response
+          const errorData = await response.json(); // Assuming the backend sends back a JSON 
+          console.error('Failed to join project with status:', response.status, await response.json());
           console.error('Failed to join project:', errorData.message);
           // Handle the display of error messages in the UI here
       }

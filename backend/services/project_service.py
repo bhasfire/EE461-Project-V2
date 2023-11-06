@@ -7,14 +7,19 @@ supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJl
 supabase: Client = create_client(supabaseUrl, supabaseKey)
 
 def create_project(name, id):
-    data = {"project_name": name,
-            "project_id" : id}
+    data = {"project_id": id, "project_name": name}
     project_response, error = supabase.table("Projects").insert(data).execute()
 
     print("Supabase Response:", project_response)
     print("Supabase Error:", error)
 
-    if error:
+    # Check if 'error' is a string, and if so, log it and return None
+    if isinstance(error, str):
+        logging.error(f"Error creating project: {error}")
+        return None
+
+    # If 'error' is a dictionary, check for a 'status_code' key
+    if isinstance(error, dict) and 'status_code' in error and error['status_code'] != 201:
         logging.error(f"Error creating project: {error}")
         return None
 
