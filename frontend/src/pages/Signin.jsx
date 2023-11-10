@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField'; 
 import { useNavigate } from "react-router-dom";
 import Typography from '@mui/material/Typography';
-
+import Stack from '@mui/material/Stack';
 
 export const Signin = (props) => {
   const [email, setEmail] = useState('');
@@ -51,30 +51,37 @@ export const Signin = (props) => {
   
   return (
     <div className="auth-form">
-    <Typography variant="h5" component="h2" gutterBottom style={{ color: 'darkgray' }}>
+    <Typography variant="h5" component="h2" gutterBottom style={{ color: 'black' }}>
       Welcome to Hardware Checkout
     </Typography>
       <form className="signin-form" onSubmit={handleSubmit}>
-        <TextField
-          label="Email"
-          variant="outlined"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)} 
-        />
-        <TextField 
-          label="Password"
-          variant="outlined"
-          type="password" 
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <Button variant="contained" type="submit">
-          Log In!
-        </Button>
+        <Stack spacing={2}> 
+          <TextField
+            label="Email"
+            id="filled-required"
+            variant="filled"
+            style={{backgroundColor: 'lightblue'}}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)} 
+          />
+          <TextField 
+            label="Password"
+            id="filled-required"
+            variant="filled"
+            style={{backgroundColor: 'lightblue'}}
+            type="password" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button variant="contained" type="submit">
+            Log In!
+          </Button>
+          <Button variant="contained" onClick={() => switchForm('Signup')}>
+            New user? Register here!
+          </Button>
+        </Stack>
       </form>
-      <Button variant="contained" onClick={() => switchForm('Signup')}>
-        If you don't already have an account, register here!
-      </Button>
+      
       {loginFailed && (
         <Typography color="error" gutterBottom>
           Login Failed

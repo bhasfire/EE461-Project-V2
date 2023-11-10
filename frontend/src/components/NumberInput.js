@@ -2,7 +2,7 @@ import TextField from '@mui/material/TextField';
 import { useState, useEffect } from 'react';
 
 export default function NumberInput(props) {
-    const [inputText, setInputText] = useState("0");
+    const [inputText, setInputText] = useState("1");
 
     useEffect(() => {
         props.getInputFromChild(inputText);
@@ -20,6 +20,11 @@ export default function NumberInput(props) {
             label="Number"
             type="number"
             size="small"
+            InputProps={{
+                inputProps: { 
+                    min: 1 
+                }
+            }}
             InputLabelProps={{
                 shrink: true,
             }}

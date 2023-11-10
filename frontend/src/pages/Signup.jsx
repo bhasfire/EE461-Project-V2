@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { useNavigate } from "react-router-dom";
+import Stack from '@mui/material/Stack';
 
 export const Signup = (props) => {
 
@@ -35,43 +36,54 @@ export const Signup = (props) => {
   return (
     <div className="auth-form">
       <form className="signup-form" onSubmit={handleSubmit}>
-        <TextField 
-          label="First Name" 
-          variant="outlined"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-        />
+        <Stack spacing={2}> 
+          <TextField 
+            label="First Name" 
+            id="filled-required"
+            variant="filled"
+            style={{backgroundColor: 'lightblue'}}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
 
-        <TextField 
-          label="Last Name" 
-          variant="outlined"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-        />
+          <TextField 
+            label="Last Name" 
+            id="filled-required"
+            variant="filled"
+            style={{backgroundColor: 'lightblue'}}
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
 
-        <TextField 
-          label="Email" 
-          variant="outlined"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+          <TextField 
+            label="Email" 
+            id="filled-required"
+            variant="filled"
+            style={{backgroundColor: 'lightblue'}}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        <TextField
-          label="Password"
-          variant="outlined" 
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)} 
-        />
+          <TextField
+            label="Password"
+            id="filled-required"
+            variant="filled"
+            style={{backgroundColor: 'lightblue'}} 
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)} 
+          />
 
-        <Button variant="contained" type="submit">
-          Sign Up!
-        </Button>
+          <Button variant="contained" type="submit">
+            Sign Up!
+          </Button>
+          <Button variant="contained" onClick={() => switchForm('Signin')}>
+            Already have an account? Sign in here!
+          </Button>
+        </Stack> 
       </form>
 
-      <Button variant="contained" onClick={() => switchForm('Signin')}>
-        Already have an account? Sign in here!
-      </Button>
+      
     </div>
   )
 }

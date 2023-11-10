@@ -17,34 +17,30 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import NumberInput from './NumberInput';
+import Card from '@mui/material/Card';
+import LogoffButton from '../components/LogoffButton';
+
+
 
 import Box from '@mui/material/Box';
 
 const drawerWidth = 240;
 
-export default function PermanentDrawerLeft() {
+export default function PermanentDrawerLeft({onLogoff}) {
+  const [pid, setPID] = useState(0)
   const [projects, setProjects] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [projectId, setProjectId] = useState('');
   const [projectName, setProjectName] = useState('');
+  const [textField, setTextField] = React.useState(0);
+  function getInputFromChild(input) {
+    setTextField(input);
+  }
 
   useEffect(() => {
     fetchProjectsWithId();
   }, []);
-
-  const fetchProjects = async () => {
-    try {
-      const response = await fetch('http://127.0.0.1:8001/project/getprojects');
-      if (response.ok) {
-        const data = await response.json();
-        setProjects(data);
-      } else {
-        console.error('Failed to fetch projects');
-      }
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-    }
-  };
 
 //---------------------------------------------
 // Create Project Dialog
@@ -81,7 +77,6 @@ export default function PermanentDrawerLeft() {
       if (response.ok) {
         const jsonResponse = await response.json();
         // Handle success
-        fetchProjectsWithId();
       } else {
         // Handle server errors
         handleOpenSnackbar('Failed to Create Project');
@@ -115,10 +110,30 @@ export default function PermanentDrawerLeft() {
     setSnackbarOpen(false);
   };
 
+  const handleSetProject = (project_id) => {
+    setPID(project_id);
+    localStorage.setItem('project', JSON.stringify(project_id));
+    console.log("project set to id: " + JSON.stringify(project_id));
+  }
 
   const fetchProjectsWithId = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8001/project/getprojectswithids');
+      // Retrieve the user data from local storage
+      const storedUser = localStorage.getItem('user');
+      const user = storedUser ? JSON.parse(storedUser) : null;
+    
+      // Ensure that the user data and userID are available
+      if (!user || !user.UserID) {
+        console.error('User ID is not available. User must be logged in to join a project.');
+        return;
+      }
+      const response = await fetch('http://127.0.0.1:8001/project/getprojectswithids', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({user_id: user.UserID}),
+      });
       if (response.ok) {
         const data = await response.json();
         setProjects(data);
@@ -131,7 +146,6 @@ export default function PermanentDrawerLeft() {
     }
   };
   
-
   const joinProject = async (projectId) => {
     // Retrieve the user data from local storage
     const storedUser = localStorage.getItem('user');
@@ -154,12 +168,13 @@ export default function PermanentDrawerLeft() {
           headers: {
               'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ user_id: userId, project_id: projectId }),
+          body: JSON.stringify({user_id: userId, project_id: projectId }),
       });
 
       if (response.ok) {
           console.log('Joined project successfully', await response.json());
           // Trigger any state updates or user feedback here
+          fetchProjectsWithId();
       } else {
           const errorData = await response.json(); // Assuming the backend sends back a JSON 
           console.error('Failed to join project with status:', response.status, await response.json());
@@ -172,8 +187,6 @@ export default function PermanentDrawerLeft() {
   }
 };
   
-  
-
   return (
     <Drawer
       sx={{
@@ -194,9 +207,13 @@ export default function PermanentDrawerLeft() {
           <ListItem 
             key={project.project_id} 
             disablePadding
-            sx={{ position: 'relative', '&:hover .joinButton': { display: 'block' } }}
+            sx={{ 
+              position: 'relative', 
+              '&:hover .joinButton': { display: 'block' }, 
+              backgroundColor: pid == project.project_id ? 'lightblue' : 'transparent'
+            }}
           >
-            <ListItemButton>
+            <ListItemButton onClick={() => handleSetProject(project.project_id)}>
               <ListItemIcon>
                 <StorageIcon />
               </ListItemIcon>
@@ -212,14 +229,6 @@ export default function PermanentDrawerLeft() {
                 height: '100%',
               }}
             >
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ height: '100%' }}
-                onClick={() => joinProject(project.project_id)}
-              >
-                Join
-              </Button>
             </Box>
           </ListItem>
         ))}
@@ -237,13 +246,29 @@ export default function PermanentDrawerLeft() {
         </IconButton>
       }
     />
+    
+    
+      <Card style={{backgroundColor: "white"}}>
+      <div style={{ margin: '8px' }}>
+        <NumberInput getInputFromChild={getInputFromChild} />
+      </div>
       <Button
         variant="contained"
         sx={{ m: 1 }}
+        onClick={() => joinProject(textField)}
+      >
+        Join Project
+      </Button>
+      
+    </Card>
+    <Button
+        variant="contained"
+        sx={{ m: 2 }}
         onClick={handleCreateProjectDialog}
       >
         Create New Project
       </Button>
+      
       
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Create Project</DialogTitle>
@@ -278,6 +303,16 @@ export default function PermanentDrawerLeft() {
           <Button onClick={handleConfirmCreateProject}>Confirm</Button>
         </DialogActions>
       </Dialog>
+      <div style={{
+        position: 'absolute',
+        bottom: 50,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+      }}>
+        <LogoffButton onLogoff={onLogoff} /> {/* Pass onLogoff to LogoffButton */}
+      </div>
     </Drawer>
   );
 }
