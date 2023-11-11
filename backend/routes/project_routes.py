@@ -90,6 +90,25 @@ def get_hardware():
         logging.error(f"Exception in get_hardware: {e}")
         return jsonify({"message": "Failed to fetch hardware", "error": str(e)}), 500  
 
+#fetches hardware quantity based on project_id
+@project_bp.route("/gethardwarequantities", methods=["POST"])
+def get_hardware_quantities():
+    data = request.get_json()
+    project_id = data.get('project_id')
+
+    if not project_id:
+        return jsonify({"message": "Project ID required"}), 400
+
+    try:
+        # Query the database to find the hw1_qty and hw2_qty for the project
+        response = supabase.table("Projects").select("hw1_qty, hw2_qty").eq("project_id", project_id).execute()
+        hw1_qty = response.data[0]['hw1_qty'] if response.data else 0
+        hw2_qty = response.data[0]['hw2_qty'] if response.data else 0
+        return jsonify({"hw1_qty": hw1_qty, "hw2_qty": hw2_qty}), 200
+    except Exception as e:
+        return jsonify({"message": "Failed to fetch hardware quantities", "error": str(e)}), 500
+
+
 @project_bp.route("/sethardware", methods=["POST"])
 def set_hardware():
     data = request.get_json()
@@ -133,9 +152,10 @@ def join_project_route():
     if not user_id or not project_id:
         return jsonify({"message": "User ID and Project ID are required"}), 400
 
-    success = join_project(user_id, project_id)
-    if success:
-        return jsonify({"message": "Successfully joined project"}), 200
+    response = join_project(user_id, project_id)
+    if response["success"]:
+        return jsonify({"message": response["message"]}), 200
     else:
-        return jsonify({"message": "Failed to join project"}), 400
+        return jsonify({"message": response["message"]}), 400
+
 

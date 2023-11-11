@@ -29,11 +29,12 @@ export default function AutoGrid(props) {
   function getInputFromChild(input) {
     setTextField(input);
   }
-
+  
   React.useEffect(() => {
     updateHardware();
     updateProject();
-  }, []);
+}, [localStorage.getItem('project')]); // Dependency on currentProjectId
+
 
   const updateHardware = async () => {
     try {
@@ -70,7 +71,7 @@ export default function AutoGrid(props) {
       console.log(response);
       if (response.ok) {
         const data = await response.json();
-        if(props.hardware_id == 1){
+        if(props.hardware_id === 1){
           sethw1_qty(data["hw1_qty"]);
         }else{
           sethw2_qty(data["hw2_qty"]);
@@ -110,7 +111,7 @@ export default function AutoGrid(props) {
   }
 
   let inventory;
-  if(props.hardware_id == 1){
+  if(props.hardware_id === 1){
     inventory = <Item>{`Current Project HW1_QTY: ${hw1_qty}`}</Item>
   }else{
     inventory = <Item>{`Current Project HW2_QTY: ${hw2_qty}`}</Item>

@@ -20,20 +20,20 @@ import CloseIcon from '@mui/icons-material/Close';
 import NumberInput from './NumberInput';
 import Card from '@mui/material/Card';
 import LogoffButton from '../components/LogoffButton';
-
-
-
 import Box from '@mui/material/Box';
 
 const drawerWidth = 240;
 
-export default function PermanentDrawerLeft({onLogoff}) {
+export default function PermanentDrawerLeft({onLogoff, updateHardwareQuantities}) {
   const [pid, setPID] = useState(0)
   const [projects, setProjects] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [projectId, setProjectId] = useState('');
   const [projectName, setProjectName] = useState('');
   const [textField, setTextField] = React.useState(0);
+  //const [capacity, setCapacity] = useState(0);
+  //const [availability, setAvailability] = useState(0);
+
   function getInputFromChild(input) {
     setTextField(input);
   }
@@ -73,16 +73,13 @@ export default function PermanentDrawerLeft({onLogoff}) {
         body: JSON.stringify(payload)
       });
 
-      // Handle the response
       if (response.ok) {
-        const jsonResponse = await response.json();
-        // Handle success
+        handleOpenSnackbar('Project Created Successfully'); // <-- Success message
+        fetchProjectsWithId();
       } else {
-        // Handle server errors
         handleOpenSnackbar('Failed to Create Project');
       }
     } catch (error) {
-      // Handle network errors
       handleOpenSnackbar('Failed to Create Project');
     }
 
@@ -110,11 +107,74 @@ export default function PermanentDrawerLeft({onLogoff}) {
     setSnackbarOpen(false);
   };
 
-  const handleSetProject = (project_id) => {
+  //----------------------------------------------------
+  // Handle Project Selection & Update of Hardware QTY
+  //----------------------------------------------------
+
+  const fetchAndUpdateHardware = async (hardwareId) => {
+    try {
+      const response = await fetch('http://127.0.0.1:8001/project/gethardware', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ hardware_id: hardwareId }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Hardware data:', data);
+  
+        // Assuming you have methods or state hooks to update capacity and availability
+        // For example:
+        //setCapacity(data.capacity);
+        //setAvailability(data.availability);
+      } else {
+        console.error('Failed to fetch hardware data:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching hardware data:', error);
+    }
+  };
+
+
+  const handleSetProject = async (project_id) => {
     setPID(project_id);
     localStorage.setItem('project', JSON.stringify(project_id));
     console.log("project set to id: " + JSON.stringify(project_id));
+  
+    try {
+      const response = await fetch('http://127.0.0.1:8001/project/gethardwarequantities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ project_id: project_id }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Hardware quantities:', data);
+  
+        // Assuming you have a way to update the state of HW1_QTY and HW2_QTY in your components
+        // For example:
+        updateHardwareQuantities(data.hw1_qty, data.hw2_qty);
+  
+        // Optionally, fetch and update hardware details
+        if (data.hw1_qty > 0) {
+          fetchAndUpdateHardware(1); // For hardware_id 1
+        }
+        if (data.hw2_qty > 0) {
+          fetchAndUpdateHardware(2); // For hardware_id 2
+        }
+      } else {
+        console.error('Failed to fetch hardware quantities.');
+      }
+    } catch (error) {
+      console.error('Error fetching hardware quantities:', error);
+    }
   }
+  
 
   const fetchProjectsWithId = async () => {
     try {
@@ -164,27 +224,28 @@ export default function PermanentDrawerLeft({onLogoff}) {
   
     try {
       const response = await fetch('http://127.0.0.1:8001/project/join', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({user_id: userId, project_id: projectId }),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user_id: userId, project_id: projectId }),
       });
-
-      if (response.ok) {
-          console.log('Joined project successfully', await response.json());
-          // Trigger any state updates or user feedback here
-          fetchProjectsWithId();
+  
+      const responseData = await response.json();
+      if (response.ok && responseData.success) {
+        console.log('Joined project successfully', responseData);
+        // Trigger any state updates or user feedback here
+        fetchProjectsWithId();
       } else {
-          const errorData = await response.json(); // Assuming the backend sends back a JSON 
-          console.error('Failed to join project with status:', response.status, await response.json());
-          console.error('Failed to join project:', errorData.message);
-          // Handle the display of error messages in the UI here
+        console.error('Failed to join project:', responseData.message);
+        // Display an error message to the user
+        handleOpenSnackbar(responseData.message);
       }
-  } catch (error) {
-      console.error('Failed to join project:', error);
+    } catch (error) {
+      console.error('Error while trying to join project:', error);
       // Handle network errors or other unexpected errors here
-  }
+      // Example: handleOpenSnackbar('Error while trying to join project');
+    }
 };
   
   return (
@@ -200,7 +261,7 @@ export default function PermanentDrawerLeft({onLogoff}) {
       variant="permanent"
       anchor="left"
     >
-      <h1>Projects</h1>
+      <h2>Your Project List</h2>
       <Divider />
       <List>
         {projects.map((project) => (
@@ -210,7 +271,7 @@ export default function PermanentDrawerLeft({onLogoff}) {
             sx={{ 
               position: 'relative', 
               '&:hover .joinButton': { display: 'block' }, 
-              backgroundColor: pid == project.project_id ? 'lightblue' : 'transparent'
+              backgroundColor: pid === project.project_id ? 'lightblue' : 'transparent'
             }}
           >
             <ListItemButton onClick={() => handleSetProject(project.project_id)}>

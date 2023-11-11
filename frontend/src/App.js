@@ -64,6 +64,14 @@ function App() {
       console.error('Logoff error', error);
     }
   };
+
+  const [hw1Qty, setHw1Qty] = useState(0);
+  const [hw2Qty, setHw2Qty] = useState(0);
+
+  const updateHardwareQuantities = (newHw1Qty, newHw2Qty) => {
+    setHw1Qty(newHw1Qty);
+    setHw2Qty(newHw2Qty);
+  };
   
 
   return (
@@ -75,7 +83,19 @@ function App() {
             <Route path="/" element={<Navigate to="/signin" />} />
             <Route path="/signin" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Signin onSignIn={handleSignIn} />} />
             <Route path="/signup" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Signup />} />
-            <Route path="/dashboard" element={isAuthenticated ? <Dashboard onLogoff={handleLogoff} /> : <Navigate to="/signin" />} />
+            {/* <Route path="/dashboard" element={isAuthenticated ? <Dashboard onLogoff={handleLogoff} /> : <Navigate to="/signin" />} /> */}
+            <Route path="/dashboard" element={
+              isAuthenticated ? (
+                <Dashboard 
+                  onLogoff={handleLogoff} 
+                  hw1Qty={hw1Qty} 
+                  hw2Qty={hw2Qty} 
+                  updateHardwareQuantities={updateHardwareQuantities} 
+                />
+              ) : (
+                <Navigate to="/signin" />
+              )
+            } />
           </Routes>
         </div>
       </Router>

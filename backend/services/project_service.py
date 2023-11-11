@@ -28,12 +28,24 @@ def get_projects_with_ids(user_id):
 
 def join_project(user_id, project_id):
     try:
-        response = supabase.table("Users").select("Projects").eq("UserID", str(user_id)).execute()
-        entry = response.data[0]
-        entry["Projects"][str(project_id)] = 0
-        supabase.table("Users").update(entry).eq("UserID", str(user_id)).execute()
-        return {"success": True, "message": "Joined project successfully"}
+        # Check if the project exists
+        project_response = supabase.table("Projects").select("*").eq("project_id", str(project_id)).execute()
+        if not project_response.data:
+            # If the project does not exist, return a message
+            return {"success": False, "message": "Project does not exist"}
+
+        # If the project exists, proceed to join the user to the project
+        user_response = supabase.table("Users").select("Projects").eq("UserID", str(user_id)).execute()
+        if user_response.data:
+            entry = user_response.data[0]
+            entry["Projects"][str(project_id)] = 0
+            supabase.table("Users").update(entry).eq("UserID", str(user_id)).execute()
+            return {"success": True, "message": "Joined project successfully"}
+        else:
+            return {"success": False, "message": "User not found"}
+
     except Exception as e:
         logging.error(f"Exception in join_project: {e}")
-        return {"success": False, "message": "Failed to join project with error" + str(e)}
+        return {"success": False, "message": "Failed to join project with error " + str(e)}
+
         
