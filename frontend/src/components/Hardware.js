@@ -6,7 +6,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import CapacityBar from './CapacityBar';
 import NumberInput from './NumberInput';
 import Button from '@mui/material/Button';
-import { Typography } from '@mui/material';
+import { Typography, Snackbar, Alert } from '@mui/material';
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -24,8 +24,11 @@ export default function AutoGrid(props) {
   const [hw1_qty, sethw1_qty] = React.useState(0);
   const [hw2_qty, sethw2_qty] = React.useState(0);
   const [textField, setTextField] = React.useState(0);
-  const currentProjectId = localStorage.getItem('project');
-  const isProjectSelected = currentProjectId !== null;
+  const isProjectSelected = props.isProjectSelected;
+
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = React.useState('info'); // 'success', 'error', 'warning', 'info'
 
   function getInputFromChild(input) {
     setTextField(input);
@@ -102,14 +105,26 @@ export default function AutoGrid(props) {
           console.log('Hardware set:', data);
           updateProject();
           updateHardware();
+          setSnackbarMessage(`Successfully ${mode === 1 ? 'checked in' : 'checked out'} ${Math.abs(Number(textField))} items.`);
+          setSnackbarSeverity('success');
         } else {
           console.error('Failed to set hardware.');
+          setSnackbarMessage('Failed to set hardware. Please try again.');
+          setSnackbarSeverity('error');
         }
+        setSnackbarOpen(true);
       } catch (error) {
         console.error('Error setting hardware:', error);
       }
     }
   }
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
 
   let inventory;
   if(props.hardware_id === 1){
@@ -157,6 +172,16 @@ export default function AutoGrid(props) {
           </Button>
         </Grid>
       </Grid>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} // Positioning at bottom middle
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
