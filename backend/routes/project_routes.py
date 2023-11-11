@@ -154,8 +154,8 @@ def join_project_route():
 
     response = join_project(user_id, project_id)
     if response["success"]:
-        return jsonify({"message": response["message"]}), 200
+        return jsonify({"success": True, "message": response["message"]}), 200
     else:
-        return jsonify({"message": response["message"]}), 400
+        return jsonify({"success": False, "message": response["message"]}), 400
 
 

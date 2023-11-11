@@ -232,10 +232,12 @@ export default function PermanentDrawerLeft({onLogoff, updateHardwareQuantities}
       });
   
       const responseData = await response.json();
+      console.log(responseData.success)
       if (response.ok && responseData.success) {
         console.log('Joined project successfully', responseData);
         // Trigger any state updates or user feedback here
         fetchProjectsWithId();
+        handleOpenSnackbar(responseData.message);
       } else {
         console.error('Failed to join project:', responseData.message);
         // Display an error message to the user
