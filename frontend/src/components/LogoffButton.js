@@ -8,6 +8,7 @@ function LogoffButton({ onLogoff }) {  // Accept onLogoff as a prop
   const handleLogoff = async () => {
     console.log("Logoff button clicked");
     localStorage.removeItem('user');
+    localStorage.removeItem('project'); // Clear project from local storage
     if (onLogoff) {
       console.log("Calling onLogoff");
       await onLogoff();

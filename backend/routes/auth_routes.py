@@ -20,6 +20,9 @@ def signup():
         first_name = data.get("firstName")
         last_name = data.get("lastName")
 
+        if not all([email, password, first_name, last_name]):
+            return jsonify({"message": "All fields are required!"}), 400
+
         print("Extracted values:", email, password, first_name, last_name)
 
         # Step 1: Hash the password

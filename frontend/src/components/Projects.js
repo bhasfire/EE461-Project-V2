@@ -263,7 +263,7 @@ export default function PermanentDrawerLeft({onLogoff, updateHardwareQuantities}
       variant="permanent"
       anchor="left"
     >
-      <h2>Your Project List</h2>
+      <h3>Your Project List</h3>
       <Divider />
       <List>
         {projects.map((project) => (
@@ -368,13 +368,13 @@ export default function PermanentDrawerLeft({onLogoff, updateHardwareQuantities}
       </Dialog>
       <div style={{
         position: 'absolute',
-        bottom: 50,
+        bottom: 20,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         width: '100%',
       }}>
-        <LogoffButton onLogoff={onLogoff} /> {/* Pass onLogoff to LogoffButton */}
+        <LogoffButton onLogoff={onLogoff} /> {/* Pass onLogoff to LogoffButton */} 
       </div>
     </Drawer>
   );

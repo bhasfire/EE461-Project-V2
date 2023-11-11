@@ -4,10 +4,9 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
 import CapacityBar from './CapacityBar';
-import IconButton from '@mui/material/IconButton';
-import AddIcon from '@mui/icons-material/Add';
-import SubtractIcon from '@mui/icons-material/Remove';
 import NumberInput from './NumberInput';
+import Button from '@mui/material/Button';
+import { Typography } from '@mui/material';
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -25,6 +24,8 @@ export default function AutoGrid(props) {
   const [hw1_qty, sethw1_qty] = React.useState(0);
   const [hw2_qty, sethw2_qty] = React.useState(0);
   const [textField, setTextField] = React.useState(0);
+  const currentProjectId = localStorage.getItem('project');
+  const isProjectSelected = currentProjectId !== null;
 
   function getInputFromChild(input) {
     setTextField(input);
@@ -112,35 +113,48 @@ export default function AutoGrid(props) {
 
   let inventory;
   if(props.hardware_id === 1){
-    inventory = <Item>{`Current Project HW1_QTY: ${hw1_qty}`}</Item>
+    inventory = <Item>{`HW1 QUANTITY: ${hw1_qty}`}</Item>
   }else{
-    inventory = <Item>{`Current Project HW2_QTY: ${hw2_qty}`}</Item>
+    inventory = <Item>{`HW2 Quantity: ${hw2_qty}`}</Item>
   }
   
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2}>
-        <Grid xs={3}>
+        {/* Existing Grid items */}
+        <Grid item xs={2.5}>
           {inventory}
         </Grid>
-        <Grid xs={2}>
+        <Grid item xs={1.5}>
           <Item>{props.name}</Item>
         </Grid>
-        <Grid xs={4.5} display="flex" justifyContent="center" alignItems="center">
+        <Grid item xs={4.75}>
           <CapacityBar value={100*availability/capacity} availability={availability} capacity={capacity}/>
         </Grid>
-        <Grid xs={1.5}>
+        <Grid item xs={1.25}>
           <NumberInput capacity={capacity} getInputFromChild={getInputFromChild}/>
         </Grid>
-        <Grid xs={0.5}>
-          <IconButton color="success" onClick={() => setHardware(1)}>
-            <AddIcon />
-          </IconButton>
+        <Grid item xs={1} display="flex" justifyContent="flex-end" pr={1}>
+          <Button 
+            variant="contained" 
+            color="success" 
+            onClick={() => setHardware(1)}
+            disabled={!isProjectSelected} // Disable if no project is selected
+            sx={{ fontSize: '0.7rem', backgroundColor: !isProjectSelected ? '#ccc' : '#fff' }}
+          >
+            Checkin
+          </Button>
         </Grid>
-        <Grid xs={0.5}>
-          <IconButton color="error" onClick={() => setHardware(-1)}>
-            <SubtractIcon />
-          </IconButton>
+        <Grid item xs={0.5} display="flex" justifyContent="flex-start">
+          <Button 
+            variant="contained" 
+            color="error" 
+            onClick={() => setHardware(-1)}
+            disabled={!isProjectSelected} // Disable if no project is selected
+            sx={{ fontSize: '0.7rem', backgroundColor: !isProjectSelected ? '#ccc' : '#fff', color: 'black' }}
+          >
+            Checkout
+          </Button>
         </Grid>
       </Grid>
     </Box>

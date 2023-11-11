@@ -3,6 +3,10 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { useNavigate } from "react-router-dom";
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+
 
 export const Signup = (props) => {
 
@@ -10,6 +14,10 @@ export const Signup = (props) => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // Can be 'success', 'error', etc.
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,8 +31,20 @@ export const Signup = (props) => {
       });
       const data = await response.json();
       console.log(data);
+      if (response.ok) {
+        setSnackbarMessage('Account created successfully!');
+        setSnackbarSeverity('success');
+        // Redirect or perform any other action upon successful signup
+      } else {
+        setSnackbarMessage(data.message || 'Failed to create account');
+        setSnackbarSeverity('error');
+      }
+      setSnackbarOpen(true);
     } catch (error) {
       console.error('Error signing up:', error);
+      setSnackbarMessage('Error signing up');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     }
   }
   
@@ -35,6 +55,9 @@ export const Signup = (props) => {
 
   return (
     <div className="auth-form">
+      <Typography variant="h5" component="h2" gutterBottom style={{ color: 'black' }}>
+        Create a New Account
+      </Typography>
       <form className="signup-form" onSubmit={handleSubmit}>
         <Stack spacing={2}> 
           <TextField 
@@ -82,7 +105,16 @@ export const Signup = (props) => {
           </Button>
         </Stack> 
       </form>
-
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+    </Snackbar>
       
     </div>
   )

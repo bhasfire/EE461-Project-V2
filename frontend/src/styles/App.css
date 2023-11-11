@@ -2,8 +2,8 @@
   text-align: center;
   display: flex;
   min-height: 100vh;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column; /* Change to column to align items from top to bottom */
+  justify-content: flex-start; /* Start content from the top */
   background-color: lightcyan;
 }
 
@@ -18,17 +18,48 @@
   color: white;
 }
 
+.dashboard-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  align-items: start; /* Align items to start from top */
+  justify-content: flex-start; /* Start content from the top */
+}
+
+
 .dashboard-content {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically, remove if not needed */
+  width: 100%; /* Ensure it takes the full width */
+  padding-right: 50px; /* Keep your existing padding */
   color: #61dafb;
 }
 
 .auth-form, .signup-form, .signin-form {
   display: flex;
   flex-direction: column;
-  align-items: left;
+  align-items: center; /* Center the elements horizontally */
   text-align: center;
-  margin-top: 20px;
+  margin-top: 100px;
+  max-width: 400px; /* Set a maximum width for the form */
+  margin-left: auto; /* Center the form horizontally */
+  margin-right: auto;
 }
+
+.auth-form .MuiTextField-root, .auth-form .MuiButton-root {
+  width: 400px; /* Adjust this to the desired width */
+  margin: auto; /* This will center the element */
+  margin-bottom: 1rem; /* Optional: Adds space below each element */
+}
+
 
 label {
   text-align: left;
