@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Projects from '../components/Projects';
 import HardwareList from '../components/HardwareList';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
@@ -6,14 +6,23 @@ import { Typography } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
+import { useNavigate } from 'react-router-dom'; // assuming you're using react-router for navigation
 
 
 function Dashboard({ onLogoff, hw1Qty, hw2Qty, updateHardwareQuantities}) {
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
-
+  const navigate = useNavigate();
   const [currentProjectId, setCurrentProjectId] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      navigate('./Signin'); // Redirect to login page if no user is stored
+    }
+  }, [navigate]);
+
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : null;
   const firstName = user ? capitalizeFirstLetter(user['First Name']) : '';

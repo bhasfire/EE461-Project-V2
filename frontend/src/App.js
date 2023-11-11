@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { Signin } from './pages/Signin';
 import { Signup } from './pages/Signup';
@@ -39,7 +39,13 @@ const darkTheme = createTheme({
 });
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('isAuthenticated') === 'true');   // Check localStorage for authentication status
+
+  useEffect(() => {
+    // Update localStorage whenever isAuthenticated changes
+    localStorage.setItem('isAuthenticated', isAuthenticated);
+  }, [isAuthenticated]);
 
   const handleSignIn = (isSuccess) => {
     setIsAuthenticated(isSuccess);
