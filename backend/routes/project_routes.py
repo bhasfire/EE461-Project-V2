@@ -44,6 +44,17 @@ def project_name_exists(project_name):
     response = supabase.table("Projects").select("project_name").eq("project_name", project_name).execute()
     return bool(response.data)
 
+@project_bp.route("/getprojectname/<int:project_id>", methods=["GET"])
+def get_project_name_route(project_id):
+    # Fetch project details based on the provided project ID
+    project = supabase.table("Projects").select("project_name").eq("project_id", project_id).execute().data
+
+    if project:
+        return jsonify({"projectName": project[0]['project_name']}), 200
+    else:
+        return jsonify({"Error Message": "Project not found"}), 404
+
+
 @project_bp.route("/getprojectswithids", methods=["POST"])
 def get_projects_with_ids_route():
     data = request.get_json()
