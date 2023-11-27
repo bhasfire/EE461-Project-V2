@@ -5,6 +5,9 @@ In this project, we focus on developing a Proof of Concept for a web application
 
 <img src="login.png" width="350"> <img src="checkout.png" width="650">
 
+## Testing
+For modularity purposes, we made sure to separate the frontend site from our backend server, allowing us to make test suites for both with ease. Using the Python unittest library, we mocked up API responses from our database, and tested the functionality of the backend routes for each interactable component on the site. These can be run from backend/routes/backend_test.py. For our frontend, we used Jest.js to mock individual states of our sites and ensure that fetch operations were going to the correct places. These tests can be found in frontend/components/frontend_test.js.
+
 ## Prerequisites
 Make sure you have these to run our site from your local machine!
 * [Python](https://www.python.org/downloads/)
