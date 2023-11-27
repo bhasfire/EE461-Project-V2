@@ -29,22 +29,22 @@ npm start
 ```
 
 ## The Stack!
-Python Flask for the Backend
-React.js for the Frontend
-PostgreSQL for Databasing, with Supabase as our Host
+- Python Flask for the Backend
+- React.js for the Frontend
+- PostgreSQL for Databasing, with Supabase as our Host
 
 Future plans to Dockerize our Backend server and host it on AWS Fargate.
 
 ## Important Docs!
 These Docs contain our planning and meeting notes, which give more detail about how we developed our site.
-Checkpoint 1: https://docs.google.com/document/d/1PMT1Vr-sBwPxBNQr3a11KwbHHSTwIitDcQHt-GpFzdQ/edit
-Final Checkpoint (Future Planning and Overall Project Description): https://docs.google.com/document/d/1fVa5UXATIv_jzksZVNa_0GOszCPbEVtZajTOPBpnOUY/edit
-Create React App Docs: https://create-react-app.dev/docs/getting-started/
-Python Flask Docs: https://flask.palletsprojects.com/en/3.0.x/
+- Checkpoint 1: https://docs.google.com/document/d/1PMT1Vr-sBwPxBNQr3a11KwbHHSTwIitDcQHt-GpFzdQ/edit
+- Final Checkpoint (Future Planning and Overall Project Description): https://docs.google.com/document/d/1fVa5UXATIv_jzksZVNa_0GOszCPbEVtZajTOPBpnOUY/edit
+- Create React App Docs: https://create-react-app.dev/docs/getting-started/
+- Python Flask Docs: https://flask.palletsprojects.com/en/3.0.x/
 
 ## The Authors
-Boris He
-Siddharth Iyer
-Andrew Nguyen
-Noam Bella
-Eddie Liao
+- Boris He
+- Siddharth Iyer
+- Andrew Nguyen
+- Noam Bella
+- Eddie Liao
